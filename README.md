@@ -34,29 +34,39 @@ The system predicts three major chronic diseases:
 > **Deployed on Render:** [https://multiple-disease-prediction-zv49.onrender.com](https://multiple-disease-prediction-zv49.onrender.com)
 
 ---
-
 ## 🖼️ Screenshots
 
 ### 🏠 Homepage — Hero Section
-![Homepage](https://i.postimg.cc/p5JxscjH/homepage-hero-section.png)
+<p align="center">
+  <img src="https://i.postimg.cc/p5JxscjH/homepage-hero-section.png" width="700">
+</p>
 
 ### 📖 How It Works Section
-![How It Works](https://i.postimg.cc/4n6J4ySc/how-it-works-section.png)
+<p align="center">
+  <img src="https://i.postimg.cc/4n6J4ySc/how-it-works-section.png" width="700">
+</p>
 
 ### 🩸 Diabetes Prediction — Input Form
-![Diabetes Form](https://i.postimg.cc/yJ2VxZBq/diabetes-prediction-form.png)
+<p align="center">
+  <img src="https://i.postimg.cc/yJ2VxZBq/diabetes-prediction-form.png" width="650">
+</p>
 
 ### 🩸 Diabetes Prediction — Result
-![Diabetes Result](https://i.postimg.cc/hQ1g2ZdZ/diabetes-prediction-result.png)
+<p align="center">
+  <img src="https://i.postimg.cc/hQ1g2ZdZ/diabetes-prediction-result.png" width="650">
+</p>
 
 ### ❤️ Heart Disease Prediction Page
-![Heart Prediction](https://i.postimg.cc/bS98mVtK/heart-prediction-page.png)
+<p align="center">
+  <img src="https://i.postimg.cc/bS98mVtK/heart-prediction-page.png" width="650">
+</p>
 
 ### 🫘 Kidney Disease Prediction Page
-![Kidney Prediction](https://i.postimg.cc/F7hhYmt4/kidney-prediction-page.png)
+<p align="center">
+  <img src="https://i.postimg.cc/F7hhYmt4/kidney-prediction-page.png" width="650">
+</p>
 
 ---
-
 ## ✨ Features
 
 - 🔬 **3 Disease Predictions** — Diabetes, Heart Disease, Chronic Kidney Disease

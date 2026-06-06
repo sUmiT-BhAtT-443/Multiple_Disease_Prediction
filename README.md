@@ -1,8 +1,10 @@
 # 🩺 MediPredict AI — Multiple Disease Prediction System
 
-<div align="center">
+<h3>🏠 Homepage — Hero Section</h3>
 
-![MediPredict AI](https://i.postimg.cc/p5JxscjH/homepage-hero-section.png,width="700")
+<p align="center">
+  <img src="https://i.postimg.cc/j2G5dGdL/homepage-hero-section.png" width="850">
+</p>
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Render-brightgreen?style=for-the-badge)](https://multiple-disease-prediction-zv49.onrender.com)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python)](https://python.org)

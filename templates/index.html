@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>MediPredict AI — Multiple Disease Prediction</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #03070f;
+      --s1: #080f1c;
+      --s2: #0d1829;
+      --ac: #3b82f6;
+      --ac2: #60a5fa;
+      --ac3: #93c5fd;
+      --em: #10b981;
+      --em2: #34d399;
+      --em3: #6ee7b7;
+      --pu: #8b5cf6;
+      --pu2: #a78bfa;
+      --pu3: #c4b5fd;
+      --tx: #f0f6ff;
+      --tx2: #cbd5e1;
+      --mu: #64748b;
+      --mu2: #94a3b8;
+      --ri: #ef4444;
+      --wa: #f59e0b;
+      --ok: #22c55e
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--tx);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    #ptc {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden
+    }
+
+    .pt {
+      position: absolute;
+      border-radius: 50%;
+      animation: fup linear infinite;
+      opacity: 0
+    }
+
+    @keyframes fup {
+      0% {
+        transform: translateY(105vh);
+        opacity: 0
+      }
+
+      8% {
+        opacity: .6
+      }
+
+      88% {
+        opacity: .18
+      }
+
+      100% {
+        transform: translateY(-8vh) translateX(25px);
+        opacity: 0
+      }
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(59, 130, 246, .028) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, .028) 1px, transparent 1px);
+      background-size: 55px 55px
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 500;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      background: rgba(3, 7, 15, .78);
+      backdrop-filter: blur(28px) saturate(1.5);
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      transition: all .3s
+    }
+
+    nav.solid {
+      background: rgba(3, 7, 15, .97);
+      border-bottom-color: rgba(59, 130, 246, .13)
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none
+    }
+
+    .logo-orb {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--ac), var(--em));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      animation: orb-glow 3s ease-in-out infinite
+    }
+
+    @keyframes orb-glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 18px rgba(59, 130, 246, .4)
+      }
+
+      50% {
+        box-shadow: 0 0 32px rgba(59, 130, 246, .7), 0 0 60px rgba(59, 130, 246, .2)
+      }
+    }
+
+    .logo-name {
+      font-family: 'Manrope', sans-serif;
+      font-size: 1.12rem;
+      font-weight: 800;
+      letter-spacing: -.3px;
+      color: var(--tx)
+    }
+
+    .logo-name .a {
+      color: var(--ac2)
+    }
+
+    .logo-name .b {
+      color: var(--em2)
+    }
+
+    .nav-mid {
+      display: flex;
+      gap: 2px
+    }
+
+    .nav-mid a {
+      color: var(--mu2);
+      text-decoration: none;
+      font-size: .83rem;
+      font-weight: 500;
+      padding: 7px 13px;
+      border-radius: 8px;
+      transition: color .2s, background .2s
+    }
+
+    .nav-mid a:hover {
+      color: var(--tx);
+      background: rgba(255, 255, 255, .07)
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .nav-soc {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 13px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      color: var(--tx2);
+      text-decoration: none;
+      font-size: .79rem;
+      font-weight: 500;
+      transition: all .2s
+    }
+
+    .nav-soc:hover {
+      border-color: rgba(59, 130, 246, .4);
+      background: rgba(59, 130, 246, .07);
+      color: var(--tx)
+    }
+
+    .nav-btn {
+      background: linear-gradient(135deg, var(--ac), #1d4ed8);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: .82rem;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(59, 130, 246, .35);
+      transition: filter .2s, transform .15s
+    }
+
+    .nav-btn:hover {
+      filter: brightness(1.12);
+      transform: translateY(-1px)
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 60px;
+      overflow: hidden
+    }
+
+    .yvw {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none
+    }
+
+    .yvw iframe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100vw;
+      height: 56.25vw;
+      min-height: 100vh;
+      min-width: 177.78vh;
+      transform: translate(-50%, -50%);
+      opacity: .3
+    }
+
+    .yov {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(180deg, rgba(3, 7, 15, .62) 0%, rgba(3, 7, 15, .72) 35%, rgba(3, 7, 15, .92) 72%, var(--bg) 100%)
+    }
+
+    .hc {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center
+    }
+
+    .hbadge {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 18px;
+      border-radius: 100px;
+      background: rgba(59, 130, 246, .09);
+      border: 1px solid rgba(59, 130, 246, .26);
+      font-size: .71rem;
+      font-weight: 600;
+      color: var(--ac2);
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      animation: fu .6s ease both
+    }
+
+    .hbadge::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 55%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .09), transparent);
+      animation: shim 3.5s ease-in-out infinite 1.5s
+    }
+
+    @keyframes shim {
+      0% {
+        left: -100%
+      }
+
+      100% {
+        left: 220%
+      }
+    }
+
+    .bdot {
+      width: 8px;
+      height: 8px;
+      background: var(--em2);
+      border-radius: 50%;
+      animation: bdot-beat 1.6s ease-in-out infinite
+    }
+
+    @keyframes bdot-beat {
+
+      0%,
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(52, 211, 153, .5)
+      }
+
+      50% {
+        transform: scale(1.5);
+        box-shadow: 0 0 0 7px rgba(52, 211, 153, 0)
+      }
+    }
+
+    .htitle {
+      font-family: 'Manrope', sans-serif;
+      font-size: clamp(2.6rem, 5.8vw, 5.4rem);
+      font-weight: 900;
+      line-height: 1.04;
+      letter-spacing: -2.5px;
+      margin-bottom: 6px;
+      animation: fu .7s .1s ease both
+    }
+
+    .htitle .t1 {
+      color: var(--tx)
+    }
+
+    .htitle .t2 {
+      background: linear-gradient(135deg, var(--ac2), var(--pu2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .htitle .t3 {
+      background: linear-gradient(135deg, var(--em2), var(--ac3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .hdiv {
+      width: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--ac), var(--em));
+      border-radius: 3px;
+      margin: 14px auto 20px;
+      animation: expand-w .9s .45s cubic-bezier(.2, .8, .2, 1) both
+    }
+
+    @keyframes expand-w {
+      to {
+        width: 100px
+      }
+    }
+
+    .hsub {
+      color: var(--mu2);
+      font-size: .97rem;
+      max-width: 500px;
+      line-height: 1.84;
+      margin-bottom: 38px;
+      animation: fu .8s .2s ease both
+    }
+
+    .hstats {
+      display: flex;
+      margin-bottom: 40px;
+      animation: fu .8s .3s ease both;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 14px;
+      overflow: hidden;
+      backdrop-filter: blur(10px)
+    }
+
+    .hst {
+      padding: 18px 30px;
+      text-align: center;
+      flex: 1;
+      position: relative;
+      transition: background .2s
+    }
+
+    .hst:hover {
+      background: rgba(255, 255, 255, .04)
+    }
+
+    .hst+.hst::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 18%;
+      height: 64%;
+      width: 1px;
+      background: rgba(255, 255, 255, .08)
+    }
+
+    .hst-n {
+      font-family: 'Manrope', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--tx), var(--ac3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .hst-l {
+      font-size: .66rem;
+      color: var(--mu);
+      text-transform: uppercase;
+      letter-spacing: .9px;
+      margin-top: 5px
+    }
+
+    .hbtns {
+      display: flex;
+      gap: 12px;
+      animation: fu .8s .4s ease both
+    }
+
+    .btn-glow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: linear-gradient(135deg, var(--ac), #1d4ed8);
+      color: #fff;
+      text-decoration: none;
+      padding: 14px 30px;
+      border-radius: 11px;
+      font-size: .9rem;
+      font-weight: 700;
+      box-shadow: 0 6px 26px rgba(59, 130, 246, .42);
+      transition: all .22s;
+      position: relative;
+      overflow: hidden
+    }
+
+    .btn-glow::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, .14), transparent);
+      opacity: 0;
+      transition: opacity .2s
+    }
+
+    .btn-glow:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 38px rgba(59, 130, 246, .56)
+    }
+
+    .btn-glow:hover::before {
+      opacity: 1
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      color: var(--tx2);
+      text-decoration: none;
+      padding: 13px 24px;
+      border-radius: 11px;
+      font-size: .88rem;
+      font-weight: 500;
+      transition: all .2s;
+      backdrop-filter: blur(8px)
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(59, 130, 246, .4);
+      background: rgba(59, 130, 246, .08);
+      color: var(--tx);
+      transform: translateY(-1px)
+    }
+
+    .scroll-ind {
+      position: absolute;
+      bottom: 28px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px
+    }
+
+    .smouse {
+      width: 24px;
+      height: 38px;
+      border: 2px solid rgba(255, 255, 255, .2);
+      border-radius: 14px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 6px;
+      animation: sbob 2s ease-in-out infinite
+    }
+
+    .swheel {
+      width: 4px;
+      height: 9px;
+      background: var(--ac2);
+      border-radius: 4px;
+      animation: swh 2s ease-in-out infinite
+    }
+
+    .stxt {
+      font-size: .64rem;
+      color: var(--mu);
+      letter-spacing: 1.3px;
+      text-transform: uppercase
+    }
+
+    @keyframes sbob {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(6px)
+      }
+    }
+
+    @keyframes swh {
+
+      0%,
+      100% {
+        transform: translateY(0);
+        opacity: .4
+      }
+
+      50% {
+        transform: translateY(8px);
+        opacity: 1
+      }
+    }
+
+    @keyframes fu {
+      from {
+        opacity: 0;
+        transform: translateY(22px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .divl {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .07), transparent);
+      margin: 0 48px
+    }
+
+    .sw {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px
+    }
+
+    .ss {
+      padding: 52px 24px;
+      position: relative;
+      z-index: 1
+    }
+
+    .sg {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px
+    }
+
+    .sb {
+      background: var(--s1);
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 14px;
+      padding: 22px 18px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+      cursor: default
+    }
+
+    .sb::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(59, 130, 246, .08), transparent 70%);
+      opacity: 0;
+      transition: opacity .3s
+    }
+
+    .sb:hover {
+      transform: translateY(-6px);
+      border-color: rgba(59, 130, 246, .28);
+      box-shadow: 0 14px 42px rgba(59, 130, 246, .11)
+    }
+
+    .sb:hover::before {
+      opacity: 1
+    }
+
+    .sbi {
+      font-size: 1.6rem;
+      margin-bottom: 9px;
+      display: block;
+      transition: transform .3s
+    }
+
+    .sb:hover .sbi {
+      transform: scale(1.12) rotate(-6deg)
+    }
+
+    .sbv {
+      font-family: 'Manrope', sans-serif;
+      font-size: 1.72rem;
+      font-weight: 900;
+      color: var(--tx);
+      margin-bottom: 3px
+    }
+
+    .sbl {
+      color: var(--mu);
+      font-size: .69rem;
+      text-transform: uppercase;
+      letter-spacing: .6px
+    }
+
+    .cs {
+      padding: 72px 0;
+      position: relative;
+      z-index: 1
+    }
+
+    .sh {
+      margin-bottom: 44px
+    }
+
+    .stag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--ac);
+      margin-bottom: 10px
+    }
+
+    .stag::before {
+      content: '';
+      width: 22px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--ac), transparent);
+      border-radius: 2px
+    }
+
+    .stitle {
+      font-family: 'Manrope', sans-serif;
+      font-size: clamp(1.7rem, 3.2vw, 2.6rem);
+      font-weight: 800;
+      color: var(--tx);
+      letter-spacing: -.8px;
+      margin-bottom: 10px
+    }
+
+    .ssub {
+      color: var(--mu);
+      font-size: .88rem;
+      max-width: 440px;
+      line-height: 1.78
+    }
+
+    .cg {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px
+    }
+
+    .dc {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: var(--s1);
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 18px;
+      padding: 28px;
+      transition: transform .35s cubic-bezier(.2, .8, .2, 1), border-color .35s, box-shadow .35s;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer
+    }
+
+    .dct {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .5s cubic-bezier(.2, .8, .2, 1);
+      border-radius: 3px
+    }
+
+    .dcg {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      top: -60px;
+      right: -50px;
+      opacity: 0;
+      transition: opacity .4s;
+      pointer-events: none;
+      filter: blur(55px)
+    }
+
+    .dc.bl .dct {
+      background: linear-gradient(90deg, var(--ac), var(--ac3))
+    }
+
+    .dc.vi .dct {
+      background: linear-gradient(90deg, var(--pu), var(--pu3))
+    }
+
+    .dc.gr .dct {
+      background: linear-gradient(90deg, var(--em), var(--em3))
+    }
+
+    .dc.bl .dcg {
+      background: rgba(59, 130, 246, .2)
+    }
+
+    .dc.vi .dcg {
+      background: rgba(139, 92, 246, .2)
+    }
+
+    .dc.gr .dcg {
+      background: rgba(16, 185, 129, .2)
+    }
+
+    .dc:hover .dct {
+      transform: scaleX(1)
+    }
+
+    .dc:hover .dcg {
+      opacity: 1
+    }
+
+    .dc.bl:hover {
+      transform: translateY(-10px);
+      border-color: rgba(59, 130, 246, .32);
+      box-shadow: 0 20px 56px rgba(59, 130, 246, .13)
+    }
+
+    .dc.vi:hover {
+      transform: translateY(-10px);
+      border-color: rgba(139, 92, 246, .32);
+      box-shadow: 0 20px 56px rgba(139, 92, 246, .13)
+    }
+
+    .dc.gr:hover {
+      transform: translateY(-10px);
+      border-color: rgba(16, 185, 129, .32);
+      box-shadow: 0 20px 56px rgba(16, 185, 129, .13)
+    }
+
+    .dci {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 16px;
+      transition: transform .3s
+    }
+
+    .dc:hover .dci {
+      transform: scale(1.1) rotate(-5deg)
+    }
+
+    .bl .dci {
+      background: rgba(59, 130, 246, .1);
+      box-shadow: 0 6px 18px rgba(59, 130, 246, .2)
+    }
+
+    .vi .dci {
+      background: rgba(139, 92, 246, .1);
+      box-shadow: 0 6px 18px rgba(139, 92, 246, .2)
+    }
+
+    .gr .dci {
+      background: rgba(16, 185, 129, .1);
+      box-shadow: 0 6px 18px rgba(16, 185, 129, .2)
+    }
+
+    .dccat {
+      font-size: .63rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 5px
+    }
+
+    .bl .dccat {
+      color: var(--ac)
+    }
+
+    .vi .dccat {
+      color: var(--pu2)
+    }
+
+    .gr .dccat {
+      color: var(--em)
+    }
+
+    .dctitle {
+      font-family: 'Manrope', sans-serif;
+      font-size: 1.24rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -.3px
+    }
+
+    .dcdesc {
+      color: var(--mu);
+      font-size: .8rem;
+      line-height: 1.7;
+      margin-bottom: 18px
+    }
+
+    .dcpills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 18px
+    }
+
+    .dpill {
+      font-size: .65rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 100px
+    }
+
+    .bl .dpill {
+      background: rgba(59, 130, 246, .08);
+      color: var(--ac2);
+      border: 1px solid rgba(59, 130, 246, .16)
+    }
+
+    .vi .dpill {
+      background: rgba(139, 92, 246, .08);
+      color: var(--pu2);
+      border: 1px solid rgba(139, 92, 246, .16)
+    }
+
+    .gr .dpill {
+      background: rgba(16, 185, 129, .08);
+      color: var(--em2);
+      border: 1px solid rgba(16, 185, 129, .16)
+    }
+
+    .dcacc {
+      background: rgba(255, 255, 255, .03);
+      border-radius: 10px;
+      padding: 11px 13px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, .05)
+    }
+
+    .dcatop {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px
+    }
+
+    .dcal {
+      font-size: .68rem;
+      color: var(--mu);
+      font-weight: 500
+    }
+
+    .dcap {
+      font-family: 'Manrope', sans-serif;
+      font-size: .82rem;
+      font-weight: 800
+    }
+
+    .bl .dcap {
+      color: var(--ac2)
+    }
+
+    .vi .dcap {
+      color: var(--pu2)
+    }
+
+    .gr .dcap {
+      color: var(--em2)
+    }
+
+    .dcbar {
+      height: 4px;
+      background: rgba(255, 255, 255, .07);
+      border-radius: 4px;
+      overflow: hidden
+    }
+
+    .dcfill {
+      height: 100%;
+      border-radius: 4px;
+      width: 0;
+      transition: width 1.5s cubic-bezier(.2, .8, .2, 1)
+    }
+
+    .bl .dcfill {
+      background: linear-gradient(90deg, var(--ac), var(--ac3))
+    }
+
+    .vi .dcfill {
+      background: linear-gradient(90deg, var(--pu), var(--pu3))
+    }
+
+    .gr .dcfill {
+      background: linear-gradient(90deg, var(--em), var(--em3))
+    }
+
+    .dccta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 15px;
+      border-radius: 10px;
+      font-size: .81rem;
+      font-weight: 700;
+      letter-spacing: .2px;
+      transition: padding .2s
+    }
+
+    .bl .dccta {
+      background: rgba(59, 130, 246, .09);
+      color: var(--ac2)
+    }
+
+    .vi .dccta {
+      background: rgba(139, 92, 246, .09);
+      color: var(--pu2)
+    }
+
+    .gr .dccta {
+      background: rgba(16, 185, 129, .09);
+      color: var(--em2)
+    }
+
+    .dc:hover .dccta {
+      padding: 11px 19px
+    }
+
+    .dcarr {
+      transition: transform .25s
+    }
+
+    .dc:hover .dcarr {
+      transform: translateX(6px)
+    }
+
+    .hs {
+      padding: 72px 0;
+      position: relative;
+      z-index: 1
+    }
+
+    /* HOW IT WORKS IMAGE */
+    .hiw-img-wrap {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .07);
+      box-shadow: 0 24px 72px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 255, 255, .04)
+    }
+
+    .hiw-img-wrap img {
+      width: 100%;
+      display: block;
+      max-height: 430px;
+      object-fit: cover
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, .06);
+      padding: 28px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1
+    }
+
+    .fbrand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: .9rem
+    }
+
+    .forb {
+      width: 26px;
+      height: 26px;
+      background: linear-gradient(135deg, var(--ac), var(--em));
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem
+    }
+
+    .fbrand span {
+      color: var(--ac2)
+    }
+
+    .fnote {
+      color: var(--mu);
+      font-size: .73rem
+    }
+
+    .flinks {
+      display: flex;
+      gap: 10px;
+      align-items: center
+    }
+
+    .flink {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--mu);
+      text-decoration: none;
+      font-size: .74rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 7px;
+      transition: color .2s, background .2s
+    }
+
+    .flink:hover {
+      color: var(--tx2);
+      background: rgba(255, 255, 255, .05)
+    }
+
+    .rv {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .7s ease, transform .7s ease
+    }
+
+    .rv.on {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    #cbt {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      z-index: 999;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--ac), var(--em));
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, .5);
+      transition: transform .2s;
+      animation: cpulse 3s ease-in-out infinite
+    }
+
+    #cbt:hover {
+      transform: scale(1.1)
+    }
+
+    @keyframes cpulse {
+
+      0%,
+      100% {
+        box-shadow: 0 4px 20px rgba(59, 130, 246, .5), 0 0 0 0 rgba(59, 130, 246, .3)
+      }
+
+      50% {
+        box-shadow: 0 4px 20px rgba(59, 130, 246, .5), 0 0 0 14px rgba(59, 130, 246, 0)
+      }
+    }
+
+    #cbp {
+      position: fixed;
+      bottom: 86px;
+      right: 22px;
+      z-index: 998;
+      width: 365px;
+      max-height: 510px;
+      background: var(--s1);
+      border: 1px solid rgba(59, 130, 246, .16);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 18px 56px rgba(0, 0, 0, .6);
+      overflow: hidden;
+      transform: scale(.88) translateY(14px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .32s cubic-bezier(.2, .8, .2, 1), opacity .26s
+    }
+
+    #cbp.on {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .chd {
+      padding: 13px 15px;
+      background: rgba(59, 130, 246, .07);
+      border-bottom: 1px solid rgba(59, 130, 246, .1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0
+    }
+
+    .cav {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--ac), var(--em));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      flex-shrink: 0
+    }
+
+    .cnm {
+      font-weight: 600;
+      font-size: .86rem;
+      color: var(--tx)
+    }
+
+    .cst {
+      font-size: .67rem;
+      color: var(--em2);
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .csd {
+      width: 5px;
+      height: 5px;
+      background: var(--em2);
+      border-radius: 50%;
+      animation: blink 2s infinite
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    .ccl {
+      margin-left: auto;
+      background: rgba(255, 255, 255, .05);
+      border: none;
+      color: var(--mu);
+      font-size: .85rem;
+      cursor: pointer;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s
+    }
+
+    .ccl:hover {
+      background: rgba(239, 68, 68, .15);
+      color: var(--ri)
+    }
+
+    .cms {
+      flex: 1;
+      overflow-y: auto;
+      padding: 11px 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scrollbar-width: thin;
+      min-height: 0
+    }
+
+    .m {
+      display: flex;
+      animation: min .22s ease both
+    }
+
+    @keyframes min {
+      from {
+        opacity: 0;
+        transform: translateY(4px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .m.u {
+      flex-direction: row-reverse
+    }
+
+    .mb {
+      max-width: 85%;
+      padding: 9px 13px;
+      border-radius: 12px;
+      font-size: .8rem;
+      line-height: 1.64
+    }
+
+    .m.b .mb {
+      background: var(--s2);
+      border: 1px solid rgba(255, 255, 255, .05);
+      border-radius: 4px 12px 12px 12px;
+      color: var(--tx2)
+    }
+
+    .m.u .mb {
+      background: rgba(59, 130, 246, .15);
+      border-radius: 12px 4px 12px 12px;
+      color: var(--tx)
+    }
+
+    .cchips {
+      padding: 7px 13px 4px;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      flex-shrink: 0
+    }
+
+    .chip {
+      background: rgba(59, 130, 246, .07);
+      border: 1px solid rgba(59, 130, 246, .16);
+      color: var(--ac2);
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-size: .69rem;
+      cursor: pointer;
+      transition: background .15s;
+      white-space: nowrap;
+      font-weight: 500
+    }
+
+    .chip:hover {
+      background: rgba(59, 130, 246, .16)
+    }
+
+    .cir {
+      padding: 9px 11px;
+      display: flex;
+      gap: 7px;
+      border-top: 1px solid rgba(255, 255, 255, .06);
+      flex-shrink: 0
+    }
+
+    .cin {
+      flex: 1;
+      background: var(--s2);
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 9px;
+      padding: 8px 12px;
+      color: var(--tx);
+      font-size: .8rem;
+      outline: none;
+      font-family: inherit;
+      transition: border-color .2s
+    }
+
+    .cin:focus {
+      border-color: var(--ac)
+    }
+
+    .cin::placeholder {
+      color: var(--mu)
+    }
+
+    .csb {
+      width: 33px;
+      height: 33px;
+      border-radius: 9px;
+      background: var(--ac);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .88rem;
+      transition: background .2s
+    }
+
+    .csb:hover {
+      background: #2563eb
+    }
+
+    .tw {
+      display: flex;
+      gap: 4px;
+      padding: 9px 13px;
+      align-items: center
+    }
+
+    .tw span {
+      width: 6px;
+      height: 6px;
+      background: var(--mu);
+      border-radius: 50%;
+      animation: tb 1.2s infinite
+    }
+
+    .tw span:nth-child(2) {
+      animation-delay: .2s
+    }
+
+    .tw span:nth-child(3) {
+      animation-delay: .4s
+    }
+
+    @keyframes tb {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0)
+      }
+
+      30% {
+        transform: translateY(-5px)
+      }
+    }
+
+    @media(max-width:900px) {
+      nav {
+        padding: 0 16px
+      }
+
+      .nav-mid,
+      .nav-soc {
+        display: none
+      }
+
+      .cg,
+      .sg {
+        grid-template-columns: 1fr
+      }
+
+      footer {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        padding: 22px 16px
+      }
+
+      #cbp {
+        width: calc(100vw - 18px);
+        right: 9px
+      }
+
+      .btn-ghost {
+        display: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="ptc"></div>
+  <div class="grid-bg"></div>
+
+  <nav id="nav">
+    <a href="/" class="logo">
+      <div class="logo-orb">🩺</div>
+      <span class="logo-name"><span class="a">Medi</span><span class="b">Predict</span> AI</span>
+    </a>
+    <div class="nav-mid">
+      <a href="#diseases">Diseases</a>
+      <a href="#how">How It Works</a>
+      <a href="#diseases">Demo</a>
+    </div>
+    <div class="nav-right">
+      <a href="https://www.linkedin.com/in/sumit-bhatt-352ba9334" target="_blank" class="nav-soc">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+        </svg>
+        LinkedIn
+      </a>
+      <a href="https://github.com/sUmiT-BhAtT-443/Multiple_Disease_Prediction" target="_blank" class="nav-soc">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.4-.5-1.6.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 6.1 18 6.4 18 6.4c.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.2.9 2.3v3.5c0 .3.1.7.8.6A12 12 0 0 0 12 .3" />
+        </svg>
+        GitHub
+      </a>
+      <a href="#diseases" class="nav-btn">Start Predicting →</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="yvw">
+      <iframe
+        src="https://www.youtube.com/embed/C8QAhPvgOgU?autoplay=1&mute=1&loop=1&playlist=C8QAhPvgOgU&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1"
+        frameborder="0" allow="autoplay;encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="yov"></div>
+    <div class="hc">
+      <div class="hbadge"><span class="bdot"></span>AI-Powered Clinical Prediction System</div>
+      <h1 class="htitle"><span class="t1">Predict </span><span class="t2">Disease Risk</span><br /><span class="t1">with
+        </span><span class="t3">Machine Learning</span></h1>
+      <div class="hdiv"></div>
+      <p class="hsub">Advanced ML models detect Diabetes, Heart Disease &amp; Kidney Disease from your clinical values —
+        accurately, instantly, and securely.</p>
+      <div class="hstats">
+        <div class="hst">
+          <div class="hst-n" data-t="3">0</div>
+          <div class="hst-l">Diseases Covered</div>
+        </div>
+        <div class="hst">
+          <div class="hst-n" data-t="95" data-s="%">0</div>
+          <div class="hst-l">Avg Accuracy</div>
+        </div>
+        <div class="hst">
+          <div class="hst-n" data-t="1471">0</div>
+          <div class="hst-l">Samples Trained</div>
+        </div>
+        <div class="hst">
+          <div class="hst-n" data-t="6">0</div>
+          <div class="hst-l">ML Models Compared</div>
+        </div>
+      </div>
+      <div class="hbtns">
+        <a href="#diseases" class="btn-glow">🔍 Start Prediction</a>
+        <a href="#how" class="btn-ghost">How It Works →</a>
+      </div>
+    </div>
+    <div class="scroll-ind">
+      <div class="smouse">
+        <div class="swheel"></div>
+      </div><span class="stxt">Scroll</span>
+    </div>
+  </section>
+
+  <div class="divl"></div>
+  <div class="ss">
+    <div class="sw">
+      <div class="sg">
+        <div class="sb rv"><span class="sbi">🩸</span>
+          <div class="sbv">82%</div>
+          <div class="sbl">Diabetes · SVM</div>
+        </div>
+        <div class="sb rv"><span class="sbi">❤️</span>
+          <div class="sbv">90%</div>
+          <div class="sbl">Heart Disease · RF</div>
+        </div>
+        <div class="sb rv"><span class="sbi">🫘</span>
+          <div class="sbv">98%</div>
+          <div class="sbl">Kidney Disease · RF</div>
+        </div>
+        <div class="sb rv"><span class="sbi">🤖</span>
+          <div class="sbv">6+</div>
+          <div class="sbl">ML Models Compared</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="divl"></div>
+
+  <section class="cs" id="diseases">
+    <div class="sw">
+      <div class="sh rv">
+        <div class="stag">Prediction Modules</div>
+        <h2 class="stitle">Select a Disease to Analyze</h2>
+        <p class="ssub">Each model trained and compared across 6+ ML algorithms for best real-world accuracy.</p>
+      </div>
+      <div class="cg">
+        <a href="/diabetes" class="dc bl rv">
+          <div class="dct"></div>
+          <div class="dcg"></div>
+          <div class="dci">🩸</div>
+          <div class="dccat">Endocrine · Type 2</div>
+          <h3 class="dctitle">Diabetes Prediction</h3>
+          <p class="dcdesc">Detect diabetes risk using glucose, BMI, insulin, blood pressure and 4 other biomarkers.</p>
+          <div class="dcpills"><span class="dpill">8 Features</span><span class="dpill">SVM Model</span><span
+              class="dpill">768 Samples</span></div>
+          <div class="dcacc">
+            <div class="dcatop"><span class="dcal">Model Accuracy</span><span class="dcap">82%</span></div>
+            <div class="dcbar">
+              <div class="dcfill" data-w="82"></div>
+            </div>
+          </div>
+          <div class="dccta">Start Prediction <span class="dcarr">→</span></div>
+        </a>
+        <a href="/heart" class="dc vi rv">
+          <div class="dct"></div>
+          <div class="dcg"></div>
+          <div class="dci">❤️</div>
+          <div class="dccat">Cardiovascular · CAD</div>
+          <h3 class="dctitle">Heart Disease Prediction</h3>
+          <p class="dcdesc">Assess cardiac risk from 13 features — cholesterol, ECG, chest pain, max heart rate and
+            more.</p>
+          <div class="dcpills"><span class="dpill">13 Features</span><span class="dpill">Random Forest</span><span
+              class="dpill">303 Samples</span></div>
+          <div class="dcacc">
+            <div class="dcatop"><span class="dcal">Model Accuracy</span><span class="dcap">90%</span></div>
+            <div class="dcbar">
+              <div class="dcfill" data-w="90"></div>
+            </div>
+          </div>
+          <div class="dccta">Start Prediction <span class="dcarr">→</span></div>
+        </a>
+        <a href="/kidney" class="dc gr rv">
+          <div class="dct"></div>
+          <div class="dcg"></div>
+          <div class="dci">🫘</div>
+          <div class="dccat">Renal · CKD</div>
+          <h3 class="dctitle">Kidney Disease Prediction</h3>
+          <p class="dcdesc">Identify CKD risk from 24 lab indicators — creatinine, haemoglobin, albumin, blood urea and
+            more.</p>
+          <div class="dcpills"><span class="dpill">24 Features</span><span class="dpill">Random Forest</span><span
+              class="dpill">400 Samples</span></div>
+          <div class="dcacc">
+            <div class="dcatop"><span class="dcal">Model Accuracy</span><span class="dcap">98%</span></div>
+            <div class="dcbar">
+              <div class="dcfill" data-w="98"></div>
+            </div>
+          </div>
+          <div class="dccta">Start Prediction <span class="dcarr">→</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="divl"></div>
+  <section class="hs" id="how">
+    <div class="sw">
+      <div class="sh rv">
+        <div class="stag">Workflow</div>
+        <h2 class="stitle">How MediPredict Works</h2>
+      </div>
+      <div class="hiw-img-wrap rv">
+        <img src="https://i.postimg.cc/FRMLwNQz/medical-photo.png" alt="MediPredict AI — How It Works" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="fbrand">
+      <div class="forb">🩺</div>Medi<span>Predict</span> AI
+    </div>
+    <div class="fnote">⚠️ Educational use only. Not a substitute for professional medical advice.</div>
+    <div class="flinks">
+      <a href="https://www.linkedin.com/in/sumit-bhatt-352ba9334" target="_blank" class="flink"><svg width="13"
+          height="13" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+        </svg>LinkedIn</a>
+      <a href="https://github.com/sUmiT-BhAtT-443/Multiple_Disease_Prediction" target="_blank" class="flink"><svg
+          width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.4-.5-1.6.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 6.1 18 6.4 18 6.4c.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.2.9 2.3v3.5c0 .3.1.7.8.6A12 12 0 0 0 12 .3" />
+        </svg>GitHub</a>
+      <a href="#diseases" class="flink">Predict</a>
+    </div>
+  </footer>
+
+  <button id="cbt">🩺</button>
+  <div id="cbp">
+    <div class="chd">
+      <div class="cav">🩺</div>
+      <div>
+        <div class="cnm">MediBot Assistant</div>
+        <div class="cst"><span class="csd"></span>Online · Ready</div>
+      </div><button class="ccl" id="ccl">✕</button>
+    </div>
+    <div class="cms" id="cms">
+      <div class="m b">
+        <div class="mb">👋 <strong>Hello! I'm MediBot.</strong><br /><br />I can help with:<br />🩸 Diabetes info &amp;
+          values<br />❤️ Heart disease info<br />🫘 Kidney disease &amp; CKD<br />🔧 How to use this
+          tool<br /><br />What would you like to know?</div>
+      </div>
+    </div>
+    <div class="cchips" id="cc">
+      <div class="chip" data-q="Hello">👋 Hello</div>
+      <div class="chip" data-q="Diabetes info">🩸 Diabetes</div>
+      <div class="chip" data-q="Heart disease info">❤️ Heart</div>
+      <div class="chip" data-q="Kidney disease info">🫘 Kidney</div>
+      <div class="chip" data-q="Normal blood sugar">Normal glucose?</div>
+      <div class="chip" data-q="CKD stages">CKD stages</div>
+      <div class="chip" data-q="How to use tool">How to use?</div>
+    </div>
+    <div class="cir"><input class="cin" id="cin" type="text" placeholder="Ask me anything…" /><button class="csb"
+        id="csb">➤</button></div>
+  </div>
+
+  <script>
+    (function () { const c = document.getElementById('ptc'); const cols = ['rgba(59,130,246,.5)', 'rgba(16,185,129,.45)', 'rgba(139,92,246,.4)', 'rgba(96,165,250,.35)']; for (let i = 0; i < 32; i++) { const p = document.createElement('div'); p.className = 'pt'; const sz = Math.random() * 2.8 + 0.8; p.style.cssText = `left:${Math.random() * 100}%;width:${sz}px;height:${sz}px;background:${cols[i % 4]};animation-duration:${Math.random() * 20 + 12}s;animation-delay:${Math.random() * 14}s;`; c.appendChild(p); } })();
+    window.addEventListener('scroll', () => document.getElementById('nav').classList.toggle('solid', scrollY > 50));
+    let cnt = false; new IntersectionObserver(([e]) => { if (e.isIntersecting && !cnt) { cnt = true; document.querySelectorAll('[data-t]').forEach(n => { const t = +n.dataset.t, s = n.dataset.s || ''; let v = 0, inc = t / 55; const tm = setInterval(() => { v = Math.min(v + inc, t); n.textContent = Math.round(v) + s; if (v >= t) clearInterval(tm); }, 30); }); } }, { threshold: .4 }).observe(document.querySelector('.hc'));
+    document.querySelectorAll('.rv').forEach(r => new IntersectionObserver(([e]) => { if (e.isIntersecting) { r.classList.add('on'); const f = r.querySelector('.dcfill'); if (f) setTimeout(() => f.style.width = f.dataset.w + '%', 200); } }, { threshold: .1 }).observe(r));
+    const cbp = document.getElementById('cbp'), cbt = document.getElementById('cbt'), ccl = document.getElementById('ccl'), cms = document.getElementById('cms'), cin = document.getElementById('cin'), csb = document.getElementById('csb');
+    cbt.onclick = () => { cbp.classList.toggle('on'); if (cbp.classList.contains('on')) setTimeout(() => cin.focus(), 180); }; ccl.onclick = () => cbp.classList.remove('on');
+    const KB = { hello: `👋 <strong>Hello!</strong> Click any disease card to start, or ask me anything!`, diabetes: `🩸 <strong>Diabetes:</strong> Blood glucose too high due to insulin issues.<br/><b>Risk factors:</b> BMI≥30, glucose≥100, age>45, family history.<br/><b>Model:</b> SVM · 8 features · 82%`, heart: `❤️ <strong>Heart Disease:</strong> Plaque narrows coronary arteries.<br/><b>Risk factors:</b> Cholesterol>200, BP>130, smoking, age>50.<br/><b>Model:</b> RF · 13 features · 90%`, kidney: `🫘 <strong>CKD:</strong> Gradual loss of kidney filtering function.<br/><b>Risk factors:</b> Diabetes, hypertension, high creatinine.<br/><b>Model:</b> RF · 24 features · 98%`, glucose: `📊 <b>Normal Fasting Blood Sugar:</b><br/>✅ Normal: 70–99 mg/dL<br/>⚠️ Pre-diabetes: 100–125<br/>🔴 Diabetes: ≥126 mg/dL`, ckd: `🫘 <b>CKD Stages:</b><br/>Stage 1: ≥90 eGFR<br/>Stage 2: 60–89<br/>Stage 3: 30–59<br/>Stage 4: 15–29<br/>Stage 5: &lt;15 (failure)`, howto: `🔧 <b>How to use:</b><br/>1️⃣ Click a disease card<br/>2️⃣ Fill values from lab report<br/>3️⃣ Click "Predict"<br/>4️⃣ View risk score &amp; charts`, def: `Ask: 🩸 Diabetes · ❤️ Heart · 🫘 Kidney · 📊 Lab values · 🔧 How to use` };
+    function cbr(t) { t = t.toLowerCase().trim(); if (/^(hi+|hello|hey|hii|namaste)/.test(t)) return KB.hello; if (/thank/.test(t)) return `You're welcome! 😊`; if (/diabet/.test(t)) return KB.diabetes; if (/heart/.test(t)) return KB.heart; if (/ckd|stage|egfr/.test(t)) return KB.ckd; if (/kidney|renal/.test(t)) return KB.kidney; if (/glucose|blood sugar/.test(t)) return KB.glucose; if (/how|use|tool/.test(t)) return KB.howto; return KB.def; }
+    function cadd(t, f = 'b') { const d = document.createElement('div'); d.className = `m ${f}`; d.innerHTML = `<div class="mb">${t}</div>`; cms.appendChild(d); cms.scrollTop = cms.scrollHeight; }
+    function csend(t) { if (!t.trim()) return; cadd(t, 'u'); cin.value = ''; document.getElementById('cc').style.display = 'none'; const ty = document.createElement('div'); ty.className = 'm b'; ty.id = 'ct'; ty.innerHTML = `<div class="mb"><div class="tw"><span></span><span></span><span></span></div></div>`; cms.appendChild(ty); cms.scrollTop = cms.scrollHeight; setTimeout(() => { ty.remove(); cadd(cbr(t)); }, 600 + Math.random() * 250); }
+    csb.onclick = () => csend(cin.value); cin.onkeydown = e => { if (e.key === 'Enter') csend(cin.value); }; document.querySelectorAll('.chip').forEach(c => c.onclick = () => csend(c.dataset.q));
+  </script>
+</body>
+
+</html>

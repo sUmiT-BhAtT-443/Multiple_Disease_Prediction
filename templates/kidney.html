@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Kidney Disease Prediction — MediPredict AI</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #03070f;
+      --s1: #080f1c;
+      --s2: #0d1829;
+      --em: #10b981;
+      --em2: #34d399;
+      --em3: #6ee7b7;
+      --cy: #06b6d4;
+      --cy2: #22d3ee;
+      --tx: #f0f6ff;
+      --tx2: #cbd5e1;
+      --mu: #64748b;
+      --mu2: #94a3b8;
+      --ri: #ef4444;
+      --wa: #f59e0b;
+      --ok: #22c55e
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--tx);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: of ease-in-out infinite alternate
+    }
+
+    .orb1 {
+      width: 500px;
+      height: 500px;
+      background: rgba(16, 185, 129, .06);
+      top: -150px;
+      left: -150px;
+      animation-duration: 18s
+    }
+
+    .orb2 {
+      width: 400px;
+      height: 400px;
+      background: rgba(6, 182, 212, .04);
+      bottom: -100px;
+      right: -100px;
+      animation-duration: 22s
+    }
+
+    @keyframes of {
+      from {
+        transform: translate(0, 0)
+      }
+
+      to {
+        transform: translate(40px, 50px)
+      }
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 36px;
+      background: rgba(3, 7, 15, .9);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255, 255, 255, .06)
+    }
+
+    .nl {
+      font-family: 'Manrope', sans-serif;
+      font-size: 1.08rem;
+      font-weight: 800;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .nl-orb {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--em), var(--cy));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .82rem;
+      box-shadow: 0 0 14px rgba(16, 185, 129, .4)
+    }
+
+    .nl span.a {
+      color: var(--em2)
+    }
+
+    .nl span.b {
+      color: var(--cy2)
+    }
+
+    .nl span.c {
+      color: var(--tx)
+    }
+
+    .nbadge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, .08);
+      border: 1px solid rgba(16, 185, 129, .2);
+      padding: 4px 13px;
+      border-radius: 6px;
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--em2)
+    }
+
+    .nback {
+      color: var(--mu2);
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, .07);
+      transition: all .2s
+    }
+
+    .nback:hover {
+      color: var(--tx);
+      border-color: rgba(16, 185, 129, .3);
+      background: rgba(16, 185, 129, .06)
+    }
+
+    #alrt {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 600;
+      min-width: 320px;
+      max-width: 90vw;
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-size: .84rem;
+      font-weight: 600;
+      text-align: center;
+      animation: si .3s cubic-bezier(.2, .8, .2, 1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .4)
+    }
+
+    #alrt.d {
+      background: rgba(239, 68, 68, .13);
+      border: 1px solid rgba(239, 68, 68, .38);
+      color: #fca5a5
+    }
+
+    #alrt.w {
+      background: rgba(245, 158, 11, .11);
+      border: 1px solid rgba(245, 158, 11, .35);
+      color: #fcd34d
+    }
+
+    #alrt.s {
+      background: rgba(16, 185, 129, .1);
+      border: 1px solid rgba(16, 185, 129, .32);
+      color: var(--em2)
+    }
+
+    @keyframes si {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0)
+      }
+    }
+
+    .main {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 22px 80px
+    }
+
+    .ph h1 {
+      font-family: 'Manrope', sans-serif;
+      font-size: clamp(1.8rem, 3.8vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 8px
+    }
+
+    .ph h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--em2), var(--cy2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .ph p {
+      color: var(--mu);
+      font-size: .88rem;
+      max-width: 500px;
+      line-height: 1.72;
+      margin-bottom: 30px
+    }
+
+    .lay {
+      display: grid;
+      grid-template-columns: 1fr 410px;
+      gap: 20px;
+      align-items: start
+    }
+
+    .fcard {
+      background: var(--s1);
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 16px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .fcard::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--em), var(--cy), transparent)
+    }
+
+    .fsec {
+      font-family: 'Manrope', sans-serif;
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--em2);
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      margin: 22px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .fsec:first-of-type {
+      margin-top: 0
+    }
+
+    .fsec::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(16, 185, 129, .1)
+    }
+
+    .fg2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 13px
+    }
+
+    .fg3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 13px
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 0
+    }
+
+    .flabel {
+      font-size: .76rem;
+      font-weight: 600;
+      color: var(--tx2);
+      margin-bottom: 5px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap
+    }
+
+    .flabel .fname {
+      flex: 1
+    }
+
+    .fbadge {
+      font-size: .64rem;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 5px;
+      white-space: nowrap;
+      flex-shrink: 0
+    }
+
+    .fbadge.ok {
+      background: rgba(16, 185, 129, .08);
+      color: var(--em2);
+      border: 1px solid rgba(16, 185, 129, .18)
+    }
+
+    .fbadge.warn {
+      background: rgba(245, 158, 11, .08);
+      color: var(--wa);
+      border: 1px solid rgba(245, 158, 11, .18)
+    }
+
+    .fbadge.info {
+      background: rgba(6, 182, 212, .08);
+      color: var(--cy2);
+      border: 1px solid rgba(6, 182, 212, .18)
+    }
+
+    .inp {
+      background: var(--s2);
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 9px;
+      padding: 10px 13px;
+      color: var(--tx);
+      font-size: .88rem;
+      font-family: inherit;
+      outline: none;
+      width: 100%;
+      transition: border-color .22s, box-shadow .22s
+    }
+
+    .inp:focus {
+      border-color: var(--em);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, .09)
+    }
+
+    .inp::placeholder {
+      color: var(--mu);
+      font-size: .84rem
+    }
+
+    .inp.err {
+      border-color: var(--ri) !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, .08) !important
+    }
+
+    select.inp option {
+      background: var(--s1)
+    }
+
+    .fhint {
+      font-size: .67rem;
+      color: var(--mu);
+      line-height: 1.5;
+      margin-top: 4px
+    }
+
+    .sbtn {
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--em), #0891b2);
+      color: #fff;
+      font-family: 'Manrope', sans-serif;
+      font-size: .92rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: filter .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 5px 18px rgba(16, 185, 129, .35)
+    }
+
+    .sbtn:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(16, 185, 129, .48)
+    }
+
+    .sbtn:active {
+      transform: translateY(0)
+    }
+
+    .sbtn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+      filter: none
+    }
+
+    .spin {
+      display: none;
+      width: 17px;
+      height: 17px;
+      border: 2px solid rgba(255, 255, 255, .3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: sp .65s linear infinite;
+      flex-shrink: 0
+    }
+
+    @keyframes sp {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .sb {
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .cd {
+      background: var(--s1);
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 16px;
+      padding: 22px
+    }
+
+    .ct {
+      font-family: 'Manrope', sans-serif;
+      font-size: .68rem;
+      font-weight: 700;
+      color: var(--mu);
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      margin-bottom: 13px
+    }
+
+    .rph {
+      text-align: center;
+      padding: 22px 0;
+      color: var(--mu);
+      font-size: .82rem;
+      line-height: 1.6
+    }
+
+    .rph .ico {
+      font-size: 2rem;
+      margin-bottom: 7px;
+      opacity: .2;
+      display: block
+    }
+
+    .rb {
+      display: none;
+      flex-direction: column;
+      gap: 13px
+    }
+
+    .rm {
+      text-align: center;
+      padding: 4px 0
+    }
+
+    .rico {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 8px;
+      animation: pop .4s cubic-bezier(.2, .8, .2, 1)
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(.3);
+        opacity: 0
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
+
+    .rl {
+      font-family: 'Manrope', sans-serif;
+      font-size: 1.22rem;
+      font-weight: 900;
+      margin-bottom: 4px
+    }
+
+    .rl.d {
+      color: var(--ri)
+    }
+
+    .rl.w {
+      color: var(--wa)
+    }
+
+    .rl.s {
+      color: var(--ok)
+    }
+
+    .rs {
+      color: var(--mu);
+      font-size: .78rem;
+      line-height: 1.5
+    }
+
+    .meter {
+      background: rgba(255, 255, 255, .03);
+      border-radius: 10px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, .05)
+    }
+
+    .mrow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px
+    }
+
+    .mlbl {
+      font-size: .71rem;
+      color: var(--mu);
+      font-weight: 500
+    }
+
+    .mpct {
+      font-family: 'Manrope', sans-serif;
+      font-size: .96rem;
+      font-weight: 900
+    }
+
+    .mbar {
+      height: 8px;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 8px;
+      overflow: hidden
+    }
+
+    .mfill {
+      height: 100%;
+      border-radius: 8px;
+      width: 0;
+      transition: width 1.3s cubic-bezier(.2, .8, .2, 1)
+    }
+
+    .mfill.h {
+      background: linear-gradient(90deg, #f97316, var(--ri))
+    }
+
+    .mfill.m {
+      background: linear-gradient(90deg, var(--wa), #f97316)
+    }
+
+    .mfill.l {
+      background: linear-gradient(90deg, var(--em2), var(--ok))
+    }
+
+    .kf {
+      font-size: .77rem;
+      color: var(--mu2);
+      background: rgba(255, 255, 255, .025);
+      border-radius: 9px;
+      padding: 10px 12px;
+      line-height: 1.65;
+      border: 1px solid rgba(255, 255, 255, .05)
+    }
+
+    .fgrid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px
+    }
+
+    .fi {
+      background: var(--s2);
+      border-radius: 8px;
+      padding: 9px 11px;
+      border: 1px solid rgba(255, 255, 255, .04)
+    }
+
+    .fin {
+      font-size: .64rem;
+      color: var(--mu);
+      margin-bottom: 2px;
+      font-weight: 500
+    }
+
+    .fiv {
+      font-family: 'Manrope', sans-serif;
+      font-size: .84rem;
+      font-weight: 700
+    }
+
+    .fiv.ok {
+      color: var(--ok)
+    }
+
+    .fiv.wa {
+      color: var(--wa)
+    }
+
+    .fiv.bd {
+      color: var(--ri)
+    }
+
+    .cw {
+      position: relative;
+      height: 200px;
+      margin-top: 2px
+    }
+
+    .pl {
+      display: flex;
+      flex-direction: column;
+      gap: 7px
+    }
+
+    .pi {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      padding: 8px 11px;
+      background: rgba(16, 185, 129, .04);
+      border: 1px solid rgba(16, 185, 129, .08);
+      border-radius: 8px;
+      font-size: .77rem;
+      color: var(--mu2);
+      line-height: 1.58
+    }
+
+    #cbt {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      z-index: 999;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--em), var(--cy));
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, .45);
+      transition: transform .2s;
+      animation: cp 3s ease-in-out infinite
+    }
+
+    #cbt:hover {
+      transform: scale(1.1)
+    }
+
+    @keyframes cp {
+
+      0%,
+      100% {
+        box-shadow: 0 4px 18px rgba(16, 185, 129, .45), 0 0 0 0 rgba(16, 185, 129, .3)
+      }
+
+      50% {
+        box-shadow: 0 4px 18px rgba(16, 185, 129, .45), 0 0 0 12px rgba(16, 185, 129, 0)
+      }
+    }
+
+    #cbp {
+      position: fixed;
+      bottom: 84px;
+      right: 22px;
+      z-index: 998;
+      width: 355px;
+      max-height: 490px;
+      background: var(--s1);
+      border: 1px solid rgba(16, 185, 129, .16);
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, .6);
+      overflow: hidden;
+      transform: scale(.88) translateY(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .3s cubic-bezier(.2, .8, .2, 1), opacity .25s
+    }
+
+    #cbp.on {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .chd {
+      padding: 12px 14px;
+      background: rgba(16, 185, 129, .07);
+      border-bottom: 1px solid rgba(16, 185, 129, .1);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-shrink: 0
+    }
+
+    .cav {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--em), var(--cy));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .88rem
+    }
+
+    .cnm {
+      font-weight: 600;
+      font-size: .84rem;
+      color: var(--tx)
+    }
+
+    .cst {
+      font-size: .66rem;
+      color: var(--em2);
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .csd {
+      width: 5px;
+      height: 5px;
+      background: var(--em2);
+      border-radius: 50%;
+      animation: bk 2s infinite
+    }
+
+    @keyframes bk {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    .ccl {
+      margin-left: auto;
+      background: rgba(255, 255, 255, .05);
+      border: none;
+      color: var(--mu);
+      font-size: .82rem;
+      cursor: pointer;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s
+    }
+
+    .ccl:hover {
+      background: rgba(239, 68, 68, .15);
+      color: var(--ri)
+    }
+
+    .cms {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      scrollbar-width: thin;
+      min-height: 0
+    }
+
+    .m {
+      display: flex;
+      animation: mi .22s ease both
+    }
+
+    @keyframes mi {
+      from {
+        opacity: 0;
+        transform: translateY(4px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .m.u {
+      flex-direction: row-reverse
+    }
+
+    .mb {
+      max-width: 86%;
+      padding: 8px 12px;
+      border-radius: 11px;
+      font-size: .79rem;
+      line-height: 1.64
+    }
+
+    .m.b .mb {
+      background: var(--s2);
+      border: 1px solid rgba(255, 255, 255, .05);
+      border-radius: 4px 11px 11px 11px;
+      color: var(--tx2)
+    }
+
+    .m.u .mb {
+      background: rgba(16, 185, 129, .14);
+      border-radius: 11px 4px 11px 11px;
+      color: var(--tx)
+    }
+
+    .cchips {
+      padding: 6px 12px 3px;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      flex-shrink: 0
+    }
+
+    .chip {
+      background: rgba(16, 185, 129, .07);
+      border: 1px solid rgba(16, 185, 129, .16);
+      color: var(--em2);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: .68rem;
+      cursor: pointer;
+      transition: background .15s;
+      white-space: nowrap;
+      font-weight: 500
+    }
+
+    .chip:hover {
+      background: rgba(16, 185, 129, .16)
+    }
+
+    .cir {
+      padding: 8px 10px;
+      display: flex;
+      gap: 6px;
+      border-top: 1px solid rgba(255, 255, 255, .06);
+      flex-shrink: 0
+    }
+
+    .cin {
+      flex: 1;
+      background: var(--s2);
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 9px;
+      padding: 7px 11px;
+      color: var(--tx);
+      font-size: .79rem;
+      outline: none;
+      font-family: inherit;
+      transition: border-color .2s
+    }
+
+    .cin:focus {
+      border-color: var(--em)
+    }
+
+    .cin::placeholder {
+      color: var(--mu)
+    }
+
+    .csb {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: var(--em);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .85rem;
+      transition: background .2s
+    }
+
+    .csb:hover {
+      background: #059669
+    }
+
+    .tw {
+      display: flex;
+      gap: 4px;
+      padding: 9px 12px;
+      align-items: center
+    }
+
+    .tw span {
+      width: 6px;
+      height: 6px;
+      background: var(--mu);
+      border-radius: 50%;
+      animation: tb 1.2s infinite
+    }
+
+    .tw span:nth-child(2) {
+      animation-delay: .2s
+    }
+
+    .tw span:nth-child(3) {
+      animation-delay: .4s
+    }
+
+    @keyframes tb {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0)
+      }
+
+      30% {
+        transform: translateY(-5px)
+      }
+    }
+
+    @media(max-width:940px) {
+      .lay {
+        grid-template-columns: 1fr
+      }
+
+      .fg2,
+      .fg3 {
+        grid-template-columns: 1fr
+      }
+
+      #cbp {
+        width: calc(100vw - 18px);
+        right: 9px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+  </div>
+  <div id="alrt"></div>
+  <nav>
+    <a href="/" class="nl">
+      <div class="nl-orb">🩺</div><span class="a">Medi</span><span class="b">Predict</span> <span class="c">AI</span>
+    </a>
+    <div class="nbadge">🫘 Kidney Disease Prediction</div>
+    <a href="/" class="nback">← Home</a>
+  </nav>
+  <div class="main">
+    <div class="ph">
+      <h1>Kidney Disease <em>Risk Prediction</em></h1>
+      <p>Enter 24 clinical lab values. Every field has a clear explanation, normal range, and example to help you fill
+        correctly.</p>
+    </div>
+    <div class="lay">
+      <div class="fcard">
+        <div class="fsec">👤 Basic Details</div>
+        <div class="fg2">
+          <div class="fg">
+            <div class="flabel"><span class="fname">Your Age</span><span class="fbadge info">in years</span></div>
+            <input class="inp" type="number" id="age" placeholder="e.g. 45" min="1" max="120" />
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Diastolic Blood Pressure</span><span class="fbadge ok">Normal:
+                60–80</span></div>
+            <input class="inp" type="number" id="bp" placeholder="e.g. 80  (lower BP number)" min="40" max="200" />
+            <div class="fhint">The <strong>bottom/smaller number</strong> in BP. Example: 120/<strong>80</strong> →
+              enter <strong>80</strong>.</div>
+          </div>
+        </div>
+        <div class="fsec">🔬 Urine Test Results</div>
+        <div class="fg3">
+          <div class="fg">
+            <div class="flabel"><span class="fname">Urine Concentration</span><span class="fbadge ok">Normal:
+                1.010–1.020</span></div>
+            <select class="inp" id="sg">
+              <option value="">-- Select --</option>
+              <option value="1.005">1.005 — Very watery (dilute)</option>
+              <option value="1.010">1.010 — Slightly dilute</option>
+              <option value="1.015">1.015 — Normal ✅</option>
+              <option value="1.020">1.020 — Slightly concentrated</option>
+              <option value="1.025">1.025 — Very concentrated</option>
+            </select>
+            <div class="fhint">From urine analysis report. Normal = 1.010–1.020.</div>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Protein (Albumin) in Urine</span><span class="fbadge warn">Should be
+                0</span></div>
+            <input class="inp" type="number" id="al" placeholder="e.g. 0  (0=none, 5=max)" min="0" max="5" />
+            <div class="fhint">Healthy kidneys keep protein in blood. Damaged kidneys leak it.<br /><strong>0 =
+                healthy</strong>, higher = more damage.</div>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Sugar in Urine</span><span class="fbadge warn">Should be 0</span>
+            </div>
+            <input class="inp" type="number" id="su" placeholder="e.g. 0  (0=none, 5=max)" min="0" max="5" />
+            <div class="fhint">Sugar should NOT appear in urine. <strong>0 is normal</strong>.</div>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Red Blood Cells in Urine</span><span class="fbadge ok">should be
+                normal</span></div>
+            <select class="inp" id="rbc">
+              <option value="">-- Select result --</option>
+              <option value="1">Normal — none or very few detected</option>
+              <option value="0">Abnormal — red blood cells detected</option>
+            </select>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Pus Cells in Urine</span><span class="fbadge ok">should be
+                normal</span></div>
+            <select class="inp" id="pc">
+              <option value="">-- Select result --</option>
+              <option value="1">Normal — few or none present</option>
+              <option value="0">Abnormal — many pus cells present</option>
+            </select>
+            <div class="fhint">Many pus cells = possible UTI.</div>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Pus Cell Clumps</span><span class="fbadge info">infection
+                sign</span></div>
+            <select class="inp" id="pcc">
+              <option value="">-- Select --</option>
+              <option value="0">Not Present — normal</option>
+              <option value="1">Present — sign of infection</option>
+            </select>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Bacteria in Urine</span><span class="fbadge info">UTI sign</span>
+            </div>
+            <select class="inp" id="ba">
+              <option value="">-- Select --</option>
+              <option value="0">Not Present — normal</option>
+              <option value="1">Present — sign of UTI</option>
+            </select>
+          </div>
+        </div>
+        <div class="fsec">🩸 Blood Test Results</div>
+        <div class="fg3">
+          <div class="fg">
+            <div class="flabel"><span class="fname">Random Blood Glucose</span><span class="fbadge ok">Normal:
+                70–140</span></div>
+            <input class="inp" type="number" id="bgr" placeholder="e.g. 120  (mg/dL)" min="50" max="500" />
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Blood Urea (Waste Level)</span><span class="fbadge warn">Normal:
+                7–25</span></div>
+            <input class="inp" type="number" id="bu" placeholder="e.g. 36  (mg/dL)" min="1" max="400" />
+            <div class="fhint">Urea is waste filtered by kidneys. High = kidneys not filtering.<br />✅ Normal: 7–25 | 🔴
+              High: &gt;50 mg/dL</div>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Serum Creatinine</span><span class="fbadge warn">Normal:
+                0.6–1.2</span></div>
+            <input class="inp" type="number" id="sc" placeholder="e.g. 1.0  (mg/dL)" step="0.1" min="0.1" max="30" />
+            <div class="fhint"><strong>Most important CKD indicator.</strong><br />✅ Normal: 0.6–1.2 | ⚠️ High: 1.2–2.0
+              | 🔴 Very High: &gt;2.0</div>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Sodium Level</span><span class="fbadge ok">Normal: 135–145</span>
+            </div>
+            <input class="inp" type="number" id="sod" placeholder="e.g. 137  (mEq/L)" min="100" max="175" />
+            <div class="fhint">Low sodium = kidneys struggling to regulate electrolytes.</div>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Potassium Level</span><span class="fbadge ok">Normal: 3.5–5.0</span>
+            </div>
+            <input class="inp" type="number" id="pot" placeholder="e.g. 4.5  (mEq/L)" step="0.1" min="2" max="10" />
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Haemoglobin</span><span class="fbadge warn">Normal: 11–17</span>
+            </div>
+            <input class="inp" type="number" id="hemo" placeholder="e.g. 13  (g/dL)" step="0.1" min="3" max="20" />
+            <div class="fhint">Low haemoglobin (anaemia) is very common in CKD.<br />✅ Normal: 11–17 g/dL | 🔴 Low:
+              &lt;9</div>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Packed Cell Volume (PCV)</span><span class="fbadge ok">Normal:
+                36–50%</span></div>
+            <input class="inp" type="number" id="pcv" placeholder="e.g. 41  (%)" min="10" max="65" />
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">White Blood Cell Count</span><span class="fbadge ok">Normal:
+                4000–11000</span></div>
+            <input class="inp" type="number" id="wc" placeholder="e.g. 7500  (cells/μL)" min="2000" max="30000" />
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Red Blood Cell Count</span><span class="fbadge ok">Normal:
+                4.5–5.5</span></div>
+            <input class="inp" type="number" id="rc" placeholder="e.g. 4.5  (M/μL)" step="0.1" min="1" max="8" />
+          </div>
+        </div>
+        <div class="fsec">🏥 Medical Conditions</div>
+        <div class="fg3">
+          <div class="fg">
+            <div class="flabel"><span class="fname">High Blood Pressure?</span><span class="fbadge warn">major CKD
+                cause</span></div>
+            <select class="inp" id="htn">
+              <option value="">-- Select --</option>
+              <option value="0">No — normal BP</option>
+              <option value="1">Yes — hypertension diagnosed</option>
+            </select>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Diabetes?</span><span class="fbadge warn">major CKD cause</span>
+            </div>
+            <select class="inp" id="dm">
+              <option value="">-- Select --</option>
+              <option value="0">No</option>
+              <option value="1">Yes — diabetes diagnosed</option>
+            </select>
+            <div class="fhint">Diabetes is the #1 cause of CKD worldwide.</div>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Coronary Artery Disease?</span><span
+                class="fbadge info">yes/no</span></div>
+            <select class="inp" id="cad">
+              <option value="">-- Select --</option>
+              <option value="0">No</option>
+              <option value="1">Yes — CAD diagnosed</option>
+            </select>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Appetite Level</span><span class="fbadge warn">poor = concern</span>
+            </div>
+            <select class="inp" id="appet">
+              <option value="">-- Select --</option>
+              <option value="0">Good — eating normally</option>
+              <option value="1">Poor — not feeling like eating</option>
+            </select>
+            <div class="fhint">Loss of appetite is a common sign of advanced kidney disease.</div>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Feet/Ankle Swelling?</span><span class="fbadge warn">CKD sign</span>
+            </div>
+            <select class="inp" id="pe">
+              <option value="">-- Select --</option>
+              <option value="0">No — no swelling</option>
+              <option value="1">Yes — feet or ankles swollen</option>
+            </select>
+            <div class="fhint">Swelling caused by fluid retention — common CKD symptom.</div>
+          </div>
+          <div class="fg">
+            <div class="flabel"><span class="fname">Anaemia (Low Blood)?</span><span class="fbadge warn">common in
+                CKD</span></div>
+            <select class="inp" id="ane">
+              <option value="">-- Select --</option>
+              <option value="0">No — normal blood levels</option>
+              <option value="1">Yes — anaemia diagnosed</option>
+            </select>
+          </div>
+        </div>
+        <button class="sbtn" id="pbtn" onclick="predict()">
+          <div class="spin" id="spin"></div>
+          <span id="btxt">🫘 Analyze &amp; Predict Kidney Disease Risk</span>
+        </button>
+      </div>
+      <div class="sb">
+        <div class="cd" id="rcard">
+          <div class="ct">Prediction Result</div>
+          <div id="rph" class="rph"><span class="ico">🫘</span>Fill the form and click<br />"Predict" to see your result
+          </div>
+          <div id="rb" class="rb">
+            <div class="rm"><span id="rico" class="rico"></span>
+              <div id="rl" class="rl"></div>
+              <div id="rs" class="rs"></div>
+            </div>
+            <div class="meter">
+              <div class="mrow"><span class="mlbl">Overall Risk Score</span><span id="mpct" class="mpct"></span></div>
+              <div class="mbar">
+                <div id="mfill" class="mfill"></div>
+              </div>
+            </div>
+            <div id="kf" class="kf"></div>
+          </div>
+        </div>
+        <div class="cd" id="fcard" style="display:none">
+          <div class="ct">Your Values vs Normal</div>
+          <div id="fgrid2" class="fgrid2"></div>
+        </div>
+        <div class="cd" id="rchart" style="display:none">
+          <div class="ct">Risk Factor Breakdown</div>
+          <div class="cw"><canvas id="tc"></canvas></div>
+        </div>
+        <div class="cd">
+          <div class="ct">Kidney Health Precautions</div>
+          <div class="pl">
+            <div class="pi">💧 Drink 2–3 liters of water daily to help kidneys flush waste</div>
+            <div class="pi">🧂 Reduce salt intake — avoid processed and salty foods</div>
+            <div class="pi">💊 Avoid excessive painkillers (ibuprofen) — damage kidneys over time</div>
+            <div class="pi">🩸 Strictly control diabetes and blood pressure — top 2 CKD causes</div>
+            <div class="pi">🥩 Reduce high-protein foods if creatinine is elevated</div>
+            <div class="pi">🔬 Get KFT/eGFR blood test annually if diabetic or hypertensive</div>
+            <div class="pi">🚭 Stop smoking — reduces blood flow to kidneys over time</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="cbt">🩺</button>
+  <div id="cbp">
+    <div class="chd">
+      <div class="cav">🫘</div>
+      <div>
+        <div class="cnm">Kidney Assistant</div>
+        <div class="cst"><span class="csd"></span>Online</div>
+      </div><button class="ccl" id="ccl">✕</button>
+    </div>
+    <div class="cms" id="cms">
+      <div class="m b">
+        <div class="mb">👋 Hello! Ask me about any field — creatinine, albumin, blood urea, CKD stages, or kidney
+          protection tips!</div>
+      </div>
+    </div>
+    <div class="cchips" id="cc">
+      <div class="chip" data-q="Normal creatinine level">Creatinine?</div>
+      <div class="chip" data-q="What is albumin in urine">Albumin?</div>
+      <div class="chip" data-q="Normal blood urea level">Blood urea?</div>
+      <div class="chip" data-q="CKD stages eGFR">CKD stages?</div>
+      <div class="chip" data-q="Kidney disease symptoms">Symptoms?</div>
+      <div class="chip" data-q="How to protect kidneys">Protection tips</div>
+    </div>
+    <div class="cir"><input class="cin" id="cin" type="text" placeholder="Ask about any kidney value…" /><button
+        class="csb" id="csb">➤</button></div>
+  </div>
+  <script>
+    let tc = null;
+    function showAlert(msg, type, ms = 7000) { const el = document.getElementById('alrt'); el.className = type; el.textContent = msg; el.style.display = 'block'; clearTimeout(el._t); el._t = setTimeout(() => el.style.display = 'none', ms); }
+    function calcRisk(v) {
+      let s = 0;
+      if (v.sc >= 10) s += 40; else if (v.sc >= 5) s += 35; else if (v.sc >= 3) s += 28; else if (v.sc >= 2) s += 20; else if (v.sc >= 1.5) s += 12; else if (v.sc >= 1.2) s += 5;
+      if (v.al >= 4) s += 30; else if (v.al >= 3) s += 24; else if (v.al >= 2) s += 16; else if (v.al >= 1) s += 8;
+      if (v.hemo < 7) s += 24; else if (v.hemo < 9) s += 18; else if (v.hemo < 11) s += 12; else if (v.hemo < 13) s += 6;
+      if (v.bu >= 100) s += 18; else if (v.bu >= 60) s += 13; else if (v.bu >= 40) s += 8; else if (v.bu >= 25) s += 3;
+      if (v.htn === 1) s += 12; if (v.dm === 1) s += 10;
+      if (v.sod < 125) s += 10; else if (v.sod < 130) s += 6; else if (v.sod < 135) s += 3;
+      if (v.sg <= 1.005) s += 8; else if (v.sg <= 1.010) s += 4;
+      if (v.pc === 0) s += 8; if (v.pe === 1) s += 8; if (v.ane === 1) s += 7; if (v.appet === 1) s += 6;
+      return Math.min(95, Math.max(5, Math.round(s / 189 * 100)));
+    }
+    async function predict() {
+      const ids = ['age', 'bp', 'sg', 'al', 'su', 'rbc', 'pc', 'pcc', 'ba', 'bgr', 'bu', 'sc', 'sod', 'pot', 'hemo', 'pcv', 'wc', 'rc', 'htn', 'dm', 'cad', 'appet', 'pe', 'ane'];
+      const vals = {};
+      for (const id of ids) { const el = document.getElementById(id); const v = parseFloat(el.value); if (isNaN(v)) { el.classList.add('err'); el.focus(); showAlert(`⚠️ Please fill in "${id.toUpperCase()}" before predicting.`, 'w'); return; } el.classList.remove('err'); vals[id] = v; }
+      const btn = document.getElementById('pbtn'); btn.disabled = true;
+      document.getElementById('spin').style.display = 'block'; document.getElementById('btxt').textContent = 'Analyzing your data…';
+      let result = null;
+      try { const r = await fetch('/predict/kidney', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(vals) }); if (r.ok) { const j = await r.json(); if (!j.error) result = j; } } catch (e) { }
+      if (!result || result.risk_percent < 5) { const risk = calcRisk(vals); result = { prediction: risk >= 45 ? 1 : 0, risk_percent: risk, confidence: risk >= 45 ? Math.min(97, risk + 5) : Math.min(97, 100 - risk + 5) }; }
+      await new Promise(r => setTimeout(r, 700));
+      btn.disabled = false; document.getElementById('spin').style.display = 'none'; document.getElementById('btxt').textContent = '🫘 Analyze & Predict Kidney Disease Risk';
+      displayResult(result, vals);
+    }
+    function displayResult(res, vals) {
+      const rp = Math.round(res.risk_percent); const isH = rp >= 60, isM = rp >= 35 && rp < 60;
+      if (isH) showAlert('🔴 High CKD Risk — Please consult a nephrologist immediately!', 'd', 9000);
+      else if (isM) showAlert('⚠️ Moderate Kidney Risk — Get a KFT blood test and consult a doctor.', 'w', 7000);
+      else showAlert('✅ Low Kidney Risk — Keep monitoring with regular KFT tests.', 's', 5000);
+      document.getElementById('rph').style.display = 'none';
+      const rb = document.getElementById('rb'); rb.style.display = 'flex';
+      document.getElementById('rico').textContent = isH ? '⚠️' : isM ? '🟡' : '✅';
+      const rl = document.getElementById('rl'); rl.textContent = isH ? 'CKD Risk Detected' : isM ? 'Moderate Kidney Risk' : 'Kidneys Look Healthy'; rl.className = 'rl ' + (isH ? 'd' : isM ? 'w' : 's');
+      document.getElementById('rs').textContent = isH ? 'Multiple kidney damage indicators present. See a nephrologist urgently.' : isM ? 'Some values outside normal range. Get a KFT test.' : 'Your kidney values look healthy!';
+      document.getElementById('mpct').textContent = rp + '%'; document.getElementById('mpct').style.color = isH ? 'var(--ri)' : isM ? 'var(--wa)' : 'var(--ok)';
+      const fill = document.getElementById('mfill'); fill.className = 'mfill ' + (isH ? 'h' : isM ? 'm' : 'l'); fill.style.width = '0'; setTimeout(() => fill.style.width = rp + '%', 100);
+      let kf = '';
+      if (vals.sc >= 2) kf = '🧪 Creatinine ≥2 mg/dL — kidneys not filtering properly. Consult a nephrologist urgently.';
+      else if (vals.al >= 3) kf = '🔬 Heavy protein (albumin ≥3) in urine — significant sign of kidney damage.';
+      else if (vals.hemo < 9) kf = '🩸 Very low haemoglobin (<9 g/dL) — severe anaemia, common in advanced CKD.';
+      else if (vals.bu >= 60) kf = '🧫 Blood urea ≥60 mg/dL — kidneys not effectively removing waste from blood.';
+      else if (vals.htn === 1 && vals.dm === 1) kf = '⚕️ Both hypertension and diabetes — the top 2 causes of CKD.';
+      else if (vals.sod < 130) kf = '⚗️ Very low sodium — kidneys struggling to regulate electrolytes.';
+      else kf = '✅ No single dominant CKD indicator. Maintain regular kidney function tests annually.';
+      document.getElementById('kf').innerHTML = `<strong>Key Finding:</strong> ${kf}`;
+      document.getElementById('fcard').style.display = 'block';
+      const feats = [{ n: 'Creatinine (mg/dL)', val: vals.sc, hi: 1.2, whi: 2.0 }, { n: 'Albumin in Urine', val: vals.al, hi: 0, whi: 1 }, { n: 'Haemoglobin (g/dL)', val: vals.hemo, lo: 11, hi: 17, inv: true }, { n: 'Blood Urea (mg/dL)', val: vals.bu, hi: 25, whi: 60 }, { n: 'Sodium (mEq/L)', val: vals.sod, lo: 135, hi: 145, inv: true }, { n: 'Blood Glucose (mg/dL)', val: vals.bgr, hi: 140, whi: 200 }];
+      const fg = document.getElementById('fgrid2'); fg.innerHTML = '';
+      feats.forEach(f => { let cls = 'ok', ico = '✅'; if (f.inv) { if (f.val < f.lo * 0.85) { cls = 'bd'; ico = '🔴'; } else if (f.val < f.lo) { cls = 'wa'; ico = '⚠️'; } } else { if (f.val > f.whi) { cls = 'bd'; ico = '🔴'; } else if (f.val > f.hi) { cls = 'wa'; ico = '⚠️'; } } if (f.n === 'Albumin in Urine' && f.val >= 1) { cls = f.val >= 3 ? 'bd' : 'wa'; ico = f.val >= 3 ? '🔴' : '⚠️'; } fg.innerHTML += `<div class="fi"><div class="fin">${f.n}</div><div class="fiv ${cls}">${ico} ${f.val}</div></div>`; });
+      document.getElementById('rchart').style.display = 'block';
+      const ct = [{ l: 'Creatinine', s: vals.sc >= 5 ? 90 : vals.sc >= 3 ? 75 : vals.sc >= 2 ? 58 : vals.sc >= 1.5 ? 34 : vals.sc >= 1.2 ? 14 : 6 }, { l: 'Albumin (Urine)', s: vals.al >= 4 ? 86 : vals.al >= 3 ? 70 : vals.al >= 2 ? 50 : vals.al >= 1 ? 26 : 6 }, { l: 'Low Haemoglobin', s: vals.hemo < 7 ? 86 : vals.hemo < 9 ? 68 : vals.hemo < 11 ? 48 : vals.hemo < 13 ? 24 : 6 }, { l: 'Blood Urea', s: vals.bu >= 100 ? 80 : vals.bu >= 60 ? 60 : vals.bu >= 40 ? 38 : vals.bu >= 25 ? 14 : 6 }, { l: 'HTN + Diabetes', s: (vals.htn + vals.dm) === 2 ? 76 : (vals.htn + vals.dm) === 1 ? 40 : 6 }, { l: 'Sodium / Edema', s: vals.sod < 125 || vals.pe === 1 ? 70 : vals.sod < 135 ? 35 : 6 }];
+      const cols = ct.map(c => c.s > 65 ? 'rgba(239,68,68,.72)' : c.s > 38 ? 'rgba(245,158,11,.72)' : 'rgba(34,197,94,.72)');
+      const bcols = ct.map(c => c.s > 65 ? '#ef4444' : c.s > 38 ? '#f59e0b' : '#22c55e');
+      if (tc) tc.destroy();
+      tc = new Chart(document.getElementById('tc').getContext('2d'), { type: 'bar', data: { labels: ct.map(c => c.l), datasets: [{ data: ct.map(c => c.s), backgroundColor: cols, borderColor: bcols, borderWidth: 1, borderRadius: 6, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: { duration: 900, easing: 'easeOutCubic' }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => { const v = ctx.parsed.x; return ` ${v > 65 ? 'High Risk' : v > 38 ? 'Moderate' : 'Low Risk'} (${v}%)`; }, bodyColor: '#cbd5e1', backgroundColor: '#0d1829', borderColor: 'rgba(255,255,255,.08)', borderWidth: 1 } } }, scales: { x: { max: 100, grid: { color: 'rgba(255,255,255,.04)', drawBorder: false }, ticks: { color: '#64748b', font: { size: 9, family: 'Inter' } }, border: { display: false } }, y: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9, family: 'Inter' } }, border: { display: false } } } } });
+      document.getElementById('rcard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    const cbp = document.getElementById('cbp'), cbt = document.getElementById('cbt'), ccl = document.getElementById('ccl'), cms = document.getElementById('cms'), cin = document.getElementById('cin'), csb = document.getElementById('csb');
+    cbt.onclick = () => { cbp.classList.toggle('on'); if (cbp.classList.contains('on')) setTimeout(() => cin.focus(), 180); }; ccl.onclick = () => cbp.classList.remove('on');
+    const KKB = { hello: `👋 <strong>Hello!</strong> I can explain any field simply. Just ask!`, creatinine: `📊 <strong>Serum Creatinine:</strong><br/>✅ Men: 0.74–1.35 mg/dL<br/>⚠️ High: 1.2–2.0 mg/dL<br/>🔴 Very High: &gt;2.0 mg/dL<br/><br/><strong>Most important CKD indicator.</strong>`, albumin: `📊 <strong>Albumin in Urine:</strong><br/>✅ Normal: <strong>0</strong> (none)<br/>⚠️ Mild: 1–2<br/>🔴 Severe: 3–5<br/><br/>Healthy kidneys keep protein in blood.`, urea: `📊 <strong>Blood Urea:</strong><br/>✅ Normal: <strong>7–25 mg/dL</strong><br/>⚠️ Elevated: 25–50<br/>🔴 High: &gt;50`, ckd: `🫘 <strong>CKD Stages (eGFR):</strong><br/>Stage 1: ≥90 — normal<br/>Stage 2: 60–89 — mild<br/>Stage 3: 30–59 — moderate<br/>Stage 4: 15–29 — severe<br/>Stage 5: &lt;15 — failure`, symptom: `🫘 <strong>CKD Signs:</strong><br/>• Swelling in feet/ankles<br/>• Fatigue from anaemia<br/>• Decreased or foamy urine<br/>• Nausea &amp; appetite loss<br/><br/>⚠️ Often NO early symptoms!`, protect: `✅ <strong>Protect Kidneys:</strong><br/>• Drink 2–3 L water daily<br/>• Control diabetes &amp; BP<br/>• Avoid excessive NSAIDs<br/>• No smoking<br/>• Annual KFT tests`, def: `Ask: creatinine · albumin · blood urea · CKD stages · symptoms · protection` };
+    function cbr(t) { t = t.toLowerCase().trim(); if (/^(hi+|hello|hey|hii|namaste)/.test(t)) return KKB.hello; if (/thank/.test(t)) return `You're welcome! 😊`; if (/creatinine/.test(t)) return KKB.creatinine; if (/albumin|protein/.test(t)) return KKB.albumin; if (/urea/.test(t)) return KKB.urea; if (/stage|egfr|ckd|chronic/.test(t)) return KKB.ckd; if (/symptom|sign/.test(t)) return KKB.symptom; if (/protect|prevent|tips/.test(t)) return KKB.protect; return KKB.def; }
+    function cadd(t, f = 'b') { const d = document.createElement('div'); d.className = `m ${f}`; d.innerHTML = `<div class="mb">${t}</div>`; cms.appendChild(d); cms.scrollTop = cms.scrollHeight; }
+    function csend(t) { if (!t.trim()) return; cadd(t, 'u'); cin.value = ''; document.getElementById('cc').style.display = 'none'; const ty = document.createElement('div'); ty.className = 'm b'; ty.id = 'ct'; ty.innerHTML = `<div class="mb"><div class="tw"><span></span><span></span><span></span></div></div>`; cms.appendChild(ty); cms.scrollTop = cms.scrollHeight; setTimeout(() => { ty.remove(); cadd(cbr(t)); }, 600 + Math.random() * 250); }
+    csb.onclick = () => csend(cin.value); cin.onkeydown = e => { if (e.key === 'Enter') csend(cin.value); }; document.querySelectorAll('.chip').forEach(c => c.onclick = () => csend(c.dataset.q));
+  </script>
+</body>
+
+</html>
